@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Event Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #007bff;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.8em;
+      height: 12px;
+    }
+
+    input.valid, select.valid {
+      border-color: green;
+    }
+
+    input.invalid, select.invalid {
+      border-color: red;
+    }
+
+    .terms {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Community Event Registration</h1>
+    <form id="registrationForm" novalidate>
+      
+      <label>Full Name *</label>
+      <input type="text" id="fullName" required>
+      <small class="error"></small>
+      
+      <label>Email *</label>
+      <input type="email" id="email" required>
+      <small class="error"></small>
+
+      <label>Phone Number *</label>
+      <input type="text" id="phone" required>
+      <small class="error"></small>
+
+      <label>Age *</label>
+      <input type="number" id="age" required>
+      <small class="error"></small>
+
+      <label>Event Category *</label>
+      <select id="category" required>
+        <option value="">-- Select --</option>
+        <option value="sports">Sports</option>
+        <option value="music">Music</option>
+        <option value="workshop">Workshop</option>
+      </select>
+      <small class="error"></small>
+
+      <label>Additional Notes</label>
+      <textarea id="notes" maxlength="300"></textarea>
+      
+      <div class="terms">
+        <input type="checkbox" id="terms" required>
+        <label for="terms">I agree to the terms and conditions *</label>
+      </div>
+      <small class="error"></small>
+
+      <button type="submit" id="submitBtn" disabled>Register</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('registrationForm');
+    const inputs = {
+      fullName: document.getElementById('fullName'),
+      email: document.getElementById('email'),
+      phone: document.getElementById('phone'),
+      age: document.getElementById('age'),
+      category: document.getElementById('category'),
+      terms: document.getElementById('terms')
+    };
+    const submitBtn = document.getElementById('submitBtn');
+
+    const validators = {
+      fullName: value => /^[A-Za-z\s]{2,}$/.test(value),
+      email: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      phone: value => /^\d{10,15}$/.test(value),
+      age: value => /^(1[89]|[2-9]\d)$/.test(value),
+      category: value => value !== "",
+      terms: checked => checked
+    };
+
+    function validateField(field, showError = true) {
+      const value = field.type === "checkbox" ? field.checked : field.value.trim();
+      const isValid = validators[field.id](value);
+      const errorEl = field.type === "checkbox" 
+        ? field.parentElement.nextElementSibling
+        : field.nextElementSibling;
+
+      if (!isValid && showError) {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        errorEl.textContent = getErrorMessage(field.id);
+      } else if (isValid) {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        errorEl.textContent = "";
+      }
+      return isValid;
+    }
+
+    function getErrorMessage(fieldId) {
+      const messages = {
+        fullName: "Please enter a valid full name (letters only).",
+        email: "Please enter a valid email address.",
+        phone: "Please enter a valid phone number (10–15 digits).",
+        age: "You must be at least 18 years old to register.",
+        category: "Please select an event category.",
+        terms: "You must agree to the terms and conditions."
+      };
+      return messages[fieldId];
+    }
+
+    // Real-time validation
+    Object.values(inputs).forEach(input => {
+      input.addEventListener('input', () => {
+        validateField(input, false);
+        checkFormValidity();
+      });
+      if (input.type === "checkbox") {
+        input.addEventListener('change', () => {
+          validateField(input, false);
+          checkFormValidity();
+        });
+      }
+    });
+
+    function checkFormValidity() {
+      const allValid = Object.values(inputs).every(field => validateField(field, false));
+      submitBtn.disabled = !allValid;
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      let formValid = true;
+      Object.values(inputs).forEach(input => {
+        if (!validateField(input)) formValid = false;
+      });
+      if (formValid) {
+        alert('Registration successful!');
+        form.reset();
+        submitBtn.disabled = true;
+        document.querySelectorAll('.valid').forEach(el => el.classList.remove('valid'));
+      }
+    });
+  </script>
+</body>
+</html>
