@@ -10,3 +10,7 @@ Age	✅	Must be a number and ≥ 18	"You must be at least 18 years old to regist
 Event Category	✅	Must choose one from dropdown	"Please select an event category."
 Additional Notes	❌	Optional, max length 300 characters	—
 Terms Checkbox	✅	Must be checked before submission	"You must agree to the terms and conditions."
+
+
+link to it:
+https://github.com/Vishrranth/Web-Tech/blob/main/Authentication%20page
